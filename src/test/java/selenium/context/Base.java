@@ -4,11 +4,15 @@ import org.openqa.selenium.WebDriver;
 import org.testng.IInvokedMethod;
 import org.testng.ITestResult;
 import org.testng.annotations.*;
+import selenium.browser.Browser;
+import selenium.config.FilePath;
 import selenium.driver.Driver;
 import selenium.driver.DriverFactory;
 import selenium.listeners.WebDriverListener;
+import selenium.util.PropertiesUtil;
 
 import java.io.IOException;
+import java.util.Properties;
 
 @Listeners(WebDriverListener.class)
 public class Base {
@@ -30,14 +34,25 @@ public class Base {
 
     @BeforeSuite
     public void beforeSuite() {
-        System.out.println("In before suite");
-        browser = "chrome";
-        appUrl = "https://q.smartusys.net/SCM_7_5_2-scp/";
+        String sAppPropFP = FilePath.appPropPath;
+        PropertiesUtil propertiesUtil = new PropertiesUtil(sAppPropFP);
+        browser = propertiesUtil.getPropValue("browser.mode");
+        appUrl = propertiesUtil.getPropValue("app.url");
     }
 
     @BeforeClass
     public void beforeClass() {
-        System.out.println("In before class");
+
+    }
+
+    @BeforeMethod
+    public void beforeMethod() {
+        System.out.println("In before method.");
+    }
+
+    @AfterMethod
+    public void afterMethod() {
+        System.out.println("In after method.");
     }
 
     @AfterClass

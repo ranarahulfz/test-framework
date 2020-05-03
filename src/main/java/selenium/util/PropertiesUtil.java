@@ -36,11 +36,11 @@ public class PropertiesUtil {
         }
     }
 
-    public static String getPropValue(String key) {
+    public String getPropValue(String key) {
        return prop.getProperty(key);
     }
 
-    public static void setPropValue(String key, String value){
+    public void setPropValue(String key, String value){
         writeProp.setProperty(key, value);
     }
 

@@ -1,5 +1,6 @@
 package selenium.driver;
 
+import io.github.bonigarcia.wdm.WebDriverManager;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -13,52 +14,35 @@ import selenium.util.OSValidator;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
 public class DriverFactory {
     private static final String HEADLESS = "headless";
-    private static final String CHROMEDRIVER = "chromedriver";
-    private static final String FIREFOXDRIVER = "geckodriver";
-    private static String driverPath = null;
-    private static final String driverLocForLinux = FilePath.driverPath + "linux" + File.separator;
-    private static final String driverLocForWin = FilePath.driverPath + "windows" + File.separator;
-    private static final String driverLocForOsx = FilePath.driverPath + "osx" + File.separator;
 
     public static WebDriver createInstance(String browserName, String appUrl, String methodName) {
         final String browserMode = System.getProperty("mode");
+        String sDownloadDefaultPath = "";
         WebDriver driver = null;
-        if (browserName.toLowerCase().contains("firefox")) {
-            if (OSValidator.isWindows()) {
-                driverPath = driverLocForWin + FIREFOXDRIVER;
-            } else if (OSValidator.isMac()) {
-                driverPath = driverLocForOsx + FIREFOXDRIVER;
-            } else if (OSValidator.isUnix()) {
-                driverPath = driverLocForLinux + FIREFOXDRIVER;
-            }
-            System.setProperty("webdriver.gecko.driver", driverPath);
-            if (browserMode != null && browserMode.equals(HEADLESS)) {
-                FirefoxOptions firefoxOptions = new FirefoxOptions();
-                firefoxOptions.addArguments("--headless");
-                driver = new FirefoxDriver(firefoxOptions);
-            } else {
-                driver = new FirefoxDriver();
-            }
-        }
         if (browserName.toLowerCase().contains("chrome")) {
-            if (OSValidator.isWindows()) {
-                driverPath = driverLocForWin + CHROMEDRIVER;
-            } else if (OSValidator.isMac()) {
-                driverPath = driverLocForOsx + CHROMEDRIVER;
-            } else if (OSValidator.isUnix()) {
-                driverPath = driverLocForLinux + CHROMEDRIVER;
-            }
-            System.setProperty("webdriver.chrome.driver", driverPath);
             ChromeOptions chromeOptions = new ChromeOptions();
             chromeOptions.setExperimentalOption("excludeSwitches", new String[]{"enable-automation"});
-            /*chromeOptions.addArguments("disable-extensions");
-            chromeOptions.addArguments("disable-popup-blocking");
-            chromeOptions.addArguments("version");*/
-            //chromeOptions.addArguments("disable-infobars");
+            chromeOptions.setExperimentalOption("excludeSwitches", Collections.singletonList("enable-automation"));
+            chromeOptions.setExperimentalOption("useAutomationExtension", false);
+            chromeOptions.addArguments("test-type");
+            chromeOptions.addArguments("--disable-web-security");
+            chromeOptions.addArguments("--always-authorize-plugins");
+            chromeOptions.addArguments("disable-infobars");
+            //chromeOptions.addArguments("--disable-geolocation");
+            chromeOptions.addArguments("--enable-strict-powerful-feature-restrictions");
+            HashMap<String, Object> chromePrefs = new HashMap<String, Object>();
+            chromePrefs.put("profile.default_content_settings.popups", 0);
+            chromePrefs.put("credentials_enable_service", false);
+            chromePrefs.put("profile.password_manager_enabled", false);
+            chromePrefs.put("download.default_directory", sDownloadDefaultPath);
+            chromeOptions.setExperimentalOption("prefs", chromePrefs);
+            WebDriverManager.chromedriver().setup();
             if (browserMode != null && browserMode.equals(HEADLESS)) {
                 chromeOptions.addArguments("--headless");
                 driver = new ChromeDriver(chromeOptions);

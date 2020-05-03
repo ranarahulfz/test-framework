@@ -8,6 +8,7 @@ import org.openqa.selenium.WebDriver;
 import org.testng.IInvokedMethod;
 import org.testng.IInvokedMethodListener;
 import org.testng.ITestResult;
+import selenium.browser.Browser;
 import selenium.context.Base;
 import selenium.driver.Driver;
 import selenium.driver.DriverFactory;
@@ -32,6 +33,7 @@ public class WebDriverListener implements IInvokedMethodListener {
                     .getId());
             System.out.println("Running test --> " + method.getTestMethod().getMethodName());
             Driver.setWebDriver(driver);
+            Browser browser = new Browser(Driver.getDriver());
         }
     }
 
